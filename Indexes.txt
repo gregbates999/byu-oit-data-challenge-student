@@ -1,0 +1,77 @@
+Indexes
+
+Table name
+	Index name
+		Fields
+
+=====================
+
+Students
+	PK
+		StudentId
+	Name
+		LastName, FirstName, StudentId
+
+StudentPhoneNumbers
+	FK
+		StudentId
+
+StudentAccommodations
+	Student
+		StudentId, AccomType
+	AccomType
+		AccomType, StudentId
+
+AccommodationTypes
+	PK
+		AccomTypeId
+
+Enrollments
+	PK
+		StudentId, CourseId
+	Course
+		CourseId, StudentId
+
+EnrollmentEvents
+	PK
+		EnrEventId
+	Student
+		StudentId, CourseId, EnrEnventId
+	Course
+		CourseId, StudentId, EnrEventId
+	Date
+		EventDateTime, EnrEventId
+
+ActiveEnrollmentSnapshots
+	PK
+		SnapshotDate, StudentId, CourseId
+	Studentt
+		StudentId, SnapshotDate, CourseId
+	Course
+		CourseId, SnapshotDate, StudentId
+
+Semesters
+	PK
+		SemesterId
+	SemesterStart
+		StartDate, EndDate, SemesterId
+	EnrollmentPeriod
+		EnrollStartDate, StartDate, EndDate, SemesterId
+
+Courses
+	PK
+		CourseId
+	Semester
+		SemesterId, CourseId
+
+Instructors
+	PK
+		InstructorId
+	Name
+		LastName, FirstName, InstructorId
+		
+TeachingSchedules
+	PK
+		CourseId, InstructorId
+	Instructor
+		InstructorId, CourseId

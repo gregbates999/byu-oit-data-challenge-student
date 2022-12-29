@@ -1,0 +1,92 @@
+Student Data Queries
+====================
+1. How many students are enrolled in a course on a specific day?
+
+Given TargetCourseId
+Given TargetDate
+
+Select TargetDate as ReportDate, c.CourseTitle, count(*) as EnrolledStudentCount
+From Semesters sem
+	join Cources c on c.SemesterId = sem.SemesterId
+	join Enrollments e on e.CourseId = c.CourseId
+Where TargetDate >= sem.StartDate and TargetDate <= sem.EndDate
+	and TargetCourseId = c.CourseId
+	and e.ActiveEnrollment = 1
+Group By c.CourseTitle;
+
+
+
+2. How many grades does a given instructor need to turn in?
+
+Given TargetInstructorId
+Given TargetSemesterId
+
+Select count(*)
+From TeachingSchedule sched
+	join Courses c on c.CourseId = sched.CourseId
+	join Enrollments e on e.CourseId = c.CourseId
+	join Semesters sem on sem.SemesterId = c.SemesterId
+Where TargetInstructorId = sched.InstructorId
+	and e.ActiveEnrollment = 1 and e.Auditing <> 1
+	and GetDate() >= sem.StartDate and GetDate() <= sem.EndDate;
+
+3. What is the GPA of an individual student for a given semester?
+
+Given TargetStudentId
+Given TargetSemesterId
+
+Select Sum(e.Credits * e.CourseGpa) / Sum(e.Credits)
+From Semesters sem
+	join Courses c on c.SemesterId = sem.SemesterId
+	join Enrollments e on e.CourseId = c.CourseId
+Where TargetSemesterId = sem.SemesterId
+	and TargetStudentId = st.StudentId
+	and e.Auditing <> 1 and e.ActiveEnrollment = 1 and Grade <> "I"
+
+
+4. What is the cumulative GPA of an individual student?
+
+Given TargetStudentId
+
+Select Sum(e.Credits * e.CourseGpa) / Sum(e.Credits)
+From Students st
+	join Enrollments e on e.StudentId = st.StudentId
+Where TargetStudentId = st.StudentId
+	and e.Auditing <> 1 and e.Grade <> "I";
+
+
+5. How many students passed their courses each semester?
+
+Select sem.StartDate, sem.EndDate, count(*) as PassedStudentCount
+From Semesters sem
+	join Courses c on c.SemesterId = sem.SemesterId
+	join Enrollments e on e.CourseId = c.CourseId
+Where e.Auditing <> 1 and e.Pass = 1
+Group By sem.StartDate, sem.EndDate
+Order By sem.StartDate;
+
+6. How does daily enrollment activity during last semester’s open enrollment period compare to the same period the year prior?
+
+Given CurSemesterId
+Given PrevSemesterId
+
+Select sem1.EnrollStartDate as CurrentSemesterEnrollmentPeriodStart,
+(
+	Select Count(*) / Count(Distinct(snap.SnapshotDate))
+	From Semesters sem1
+		join Courses c1 on c1.SemesterId = sem1.SemesterId
+		join Enrollments e1 on e1.CourseId = c1.CourseId
+		join ActiveEnrollmentSnapshots snap1 on snap1.StudentId = e1.StudentId
+			and snap1.CourseId = e1.CourseId
+	Where CurSemesterId = sem1.SemesterId
+) as CurrentAverageDailyChanges, 
+sem2.EnrollStartDate as PriorSemesterEnrollmentPeriodStart,
+(
+	Select Count(*) / Count(Distinct(snap.SnapshotDate))
+	From Semesters sem2
+		join Courses c2 on c2.SemesterId = sem2.SemesterId
+		join Enrollments e2 on e2.CourseId = c2.CourseId
+		join ActiveEnrollmentSnapshots snap2 on snap2.StudentId = e2.StudentId
+			and snap2.CourseId = e2.CourseId
+	Where PrevSemesterId = sem2.SemesterId
+) as PriorAverageDailyChanges;
