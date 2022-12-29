@@ -4,6 +4,6 @@ This design is incomplete. I suggest converting the table for the ActiveEnrollme
 
 The indexes are not complete.
 
-The SQL statements are not tested. Doing so would find enhancements we wouls want.
+The SQL statements are not tested. Doing so would find enhancements we would want.
 
 I suggest creating some test datasets for testing the queries.
