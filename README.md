@@ -7,3 +7,7 @@ The indexes are not complete.
 The SQL statements are not tested. Doing so would find enhancements we would want.
 
 I suggest creating some test datasets for testing the queries.
+
+## Update on 2023-01-12
+
+As requested, I created mock data for this model and imported them into a SQLite database to demo. I corrected the queries and put them in separate files 1.sql through 6.sql. A sample output for each query is in 1.pdf through 6.pdf.
